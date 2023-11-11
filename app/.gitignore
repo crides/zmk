@@ -1,2 +1,4 @@
 build/
+build_left/
+build_right/
 node_modules/

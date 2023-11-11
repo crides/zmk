@@ -66,6 +66,17 @@ static int is31fl3729_reg_burst_write(const struct device *dev, uint8_t start_ad
     return 0;
 }
 
+static int is31fl3729_reg_burst_read(const struct device *dev, uint8_t start_addr,
+                                      uint8_t *const buffer, size_t num_bytes) {
+    const struct is31fl3729_config *config = dev->config;
+    int ret = i2c_burst_read_dt(&config->i2c, start_addr, buffer, num_bytes);
+    if (ret < 0) {
+        LOG_ERR("Failed burst reading from reg %02x to address %02x", start_addr, config->i2c.addr);
+        return -EIO;
+    }
+    return 0;
+}
+
 static inline bool num_pixels_ok(const struct is31fl3729_config *config, size_t num_pixels) {
     size_t num_bytes;
     const bool overflow = size_mul_overflow(num_pixels, 3, &num_bytes);
@@ -104,6 +115,7 @@ static int is31fl3729_strip_update_rgb(const struct device *dev, struct led_rgb 
         data->px_buf[config->rgb_map[3 * i + 1]] = config->gamma[pixels[i].g];
         data->px_buf[config->rgb_map[3 * i + 2]] = config->gamma[pixels[i].b];
     }
+    /* LOG_HEXDUMP_INF(data->px_buf, config->px_buf_size, "pixs"); */
     return is31fl3729_strip_update_channels(dev, data->px_buf, config->px_buf_size);
 }
 
@@ -136,6 +148,19 @@ int static is31fl3729_init(const struct device *dev) {
         LOG_ERR("reset %d", ret);
         return ret;
     }
+
+    ret = is31fl3729_reg_write(dev, IS31FL3729_GCC_REG, 0x10);
+    ret = is31fl3729_reg_write(dev, IS31FL3729_PULL_SEL_REG, 0x0);
+    uint8_t inf[0x12];
+    ret = is31fl3729_reg_write(dev, IS31FL3729_CONFIG_REG, 0x51 | (0x2) << 1);
+    k_msleep(10);
+    is31fl3729_reg_burst_read(dev, IS31FL3729_OPEN_SHORT_BASE, inf, 0x12);
+    /* LOG_HEXDUMP_INF(inf, 0x12, "short"); */
+    ret = is31fl3729_reg_write(dev, IS31FL3729_CONFIG_REG, 0x51 | (0x1) << 1);
+    k_msleep(10);
+    is31fl3729_reg_burst_read(dev, IS31FL3729_OPEN_SHORT_BASE, inf, 0x12);
+    /* LOG_HEXDUMP_INF(inf, 0x12, "open"); */
+    ret = is31fl3729_reg_write(dev, IS31FL3729_PULL_SEL_REG, 0x33);
 
     // SWS, H logic, Normal operation
     ret = is31fl3729_reg_write(dev, IS31FL3729_CONFIG_REG, (config->sws << 4) | (0x01 << 3) | 0x01);

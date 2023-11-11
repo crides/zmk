@@ -1,0 +1,54 @@
+#include "fissure.dtsi"
+#include "dt-bindings/zmk/is31fl3729_transform.h"
+#include "fissure_right-pinctrl.dtsi"
+
+&transform {
+    row-offset = <4>;
+};
+
+/ {
+    chosen {
+    };
+};
+
+#define RGB_CS0 3, 2, 1
+#define RGB_CS1 9, 8, 7
+#define RGB_CS2 12, 11, 10
+#define RGB_CS3 15, 14, 13
+#define RGB_CS4 6, 5, 4
+&rgb {
+    map = <
+PIX(3, 0) PIX(2, 0) PIX(1, 0) PIX(0, 0) PIX(0, 2) PIX(0, 3)
+PIX(3, 1) PIX(2, 1) PIX(0, 4) PIX(0, 1) PIX(2, 3) PIX(1, 3) 
+PIX(3, 2) PIX(2, 2) PIX(1, 1) PIX(1, 2) PIX(3, 3)
+PIX(3, 4) PIX(2, 4) PIX(1, 4)
+        >;
+};
+
+&rgb {
+    sdb-gpios = <&gpio0 4 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
+};
+
+&spi1 {
+    cs-gpios = <&gpio1 0 GPIO_ACTIVE_LOW>, <&gpio0 15 GPIO_ACTIVE_LOW>, <&gpio0 24 GPIO_ACTIVE_LOW>;
+               // <&gpio0 8 GPIO_ACTIVE_LOW>;
+    trackball: trackball@1 {
+        compatible = "pixart,pmw3610";
+        status = "okay";
+        reg = <1>;
+        spi-max-frequency = <1500000>;
+        irq-gpios = <&gpio0 10 GPIO_ACTIVE_LOW>;
+        rst-gpios = <&gpio0 9 GPIO_ACTIVE_LOW>;
+    };
+
+    trackpad@2 {
+        compatible = "cirque,pinnacle";
+        status = "okay";
+        reg = <2>;
+        spi-max-frequency = <10000000>;
+        dr-gpios = <&gpio0 13 GPIO_ACTIVE_HIGH>;
+        rotate-90;
+        sleep;
+        /* no-taps; */
+    };
+};

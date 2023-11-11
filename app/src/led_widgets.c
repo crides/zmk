@@ -9,6 +9,7 @@
 #include <zmk/events/endpoint_changed.h>
 #include <zmk/led_widgets.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/drivers/led_strip.h>
 
 LOG_MODULE_REGISTER(led_widgets, 4);
 
@@ -35,9 +36,9 @@ static bool widget_is_status(const led_widget_t *widget) {
 
 static void led_off_all() {
     LOG_DBG("off");
-    for (uint8_t i = 0; i < NUM_LEDS; i++) {
-        led_off(leds, i);
-    }
+    /* for (uint8_t i = 0; i < NUM_LEDS; i++) { */
+    /*     led_off(leds, i); */
+    /* } */
 }
 
 static void run_widget_cmd(const led_event_type_t ev, const uint8_t cmd_ind) {
@@ -60,7 +61,7 @@ static void run_widget_cmd(const led_event_type_t ev, const uint8_t cmd_ind) {
     }
 #define _FMT(_i, _j) " %u"
 #define _ARG(i, _j) , cmd->brightness[i]
-    LOG_DBG("led" LISTIFY(NUM_LEDS, _FMT) LISTIFY(NUM_LEDS, _ARG));
+    LOG_DBG("led" LISTIFY(NUM_LEDS, _FMT, ) LISTIFY(NUM_LEDS, _ARG, ));
 #undef _FMT
 #undef _ARG
     for (uint8_t i = 0; i < NUM_LEDS; i++) {
@@ -171,16 +172,61 @@ static void loop_timer_handler(struct k_timer *timer) {
 
 static int led_widgets_event_listener(const zmk_event_t *ev) {
     widget_handler(zmk_battery_state_changed, BATTERY, state_of_charge, , <, "bat level %u");
+#if !IS_ENABLED(CONFIG_ZMK_SPLIT) || IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
 #ifdef CONFIG_ZMK_BLE
     widget_handler(zmk_ble_active_profile_changed, PROFILE, index, , ==, "ble profile %u");
 #endif
-    widget_handler(zmk_layer_state_changed, LAYER, , zmk_keymap_highest_layer_active(), ==,
-                   "layer %u");
-    widget_handler(zmk_endpoint_changed, OUTPUT, endpoint, , ==, "endpoint %u");
+    widget_handler(zmk_layer_state_changed, LAYER, , zmk_keymap_highest_layer_active(), ==, "layer %u");
+    widget_handler(zmk_endpoint_changed, OUTPUT, endpoint.transport, , ==, "endpoint %u");
+#endif
     return ZMK_EV_EVENT_BUBBLE;
 }
 
 static int led_widgets_init() {
+    struct led_rgb pixels[] = {
+        /* { .r = 13, .g = 59, .b = 0 }, */
+        /* { .r = 26, .g = 59, .b = 0 }, */
+        /* { .r = 38, .g = 59, .b = 0 }, */
+        /* { .r = 51, .g = 59, .b = 0 }, */
+        /* { .r = 64, .g = 59, .b = 0 }, */
+        /* { .r = 77, .g = 59, .b = 0 }, */
+        /* { .r = 89, .g = 59, .b = 0 }, */
+        /* { .r = 102, .g = 59, .b = 0 }, */
+        /* { .r = 115, .g = 59, .b = 0 }, */
+        /* { .r = 128, .g = 59, .b = 0 }, */
+        /* { .r = 140, .g = 59, .b = 0 }, */
+        /* { .r = 153, .g = 59, .b = 0 }, */
+        /* { .r = 166, .g = 59, .b = 0 }, */
+        /* { .r = 179, .g = 59, .b = 0 }, */
+        /* { .r = 191, .g = 59, .b = 0 }, */
+        /* { .r = 204, .g = 59, .b = 0 }, */
+        /* { .r = 217, .g = 59, .b = 0 }, */
+        /* { .r = 230, .g = 59, .b = 0 }, */
+        /* { .r = 242, .g = 59, .b = 0 }, */
+        /* { .r = 255, .g = 59, .b = 0 }, */
+
+        { .r = 255, .g = 0, .b = 0 },
+        { .r = 255, .g = 128, .b = 0 },
+        { .r = 255, .g = 255, .b = 0 },
+        { .r = 128, .g = 255, .b = 0 },
+        { .r = 0, .g = 255, .b = 0 },
+        { .r = 0, .g = 255, .b = 128 },
+        { .r = 0, .g = 255, .b = 255 },
+        { .r = 0, .g = 128, .b = 255 },
+        { .r = 0, .g = 0, .b = 255 },
+        { .r = 128, .g = 0, .b = 255 },
+        { .r = 255, .g = 0, .b = 255 },
+        { .r = 255, .g = 0, .b = 128 },
+        { .r = 255, .g = 0, .b = 0 },
+        { .r = 255, .g = 128, .b = 0 },
+        { .r = 255, .g = 255, .b = 0 },
+        { .r = 128, .g = 255, .b = 0 },
+        { .r = 0, .g = 255, .b = 0 },
+        { .r = 0, .g = 255, .b = 128 },
+        { .r = 0, .g = 255, .b = 255 },
+        { .r = 0, .g = 128, .b = 255 },
+    };
+    led_strip_update_rgb(leds, pixels, 20);
     for (uint8_t i = 0; i < LED_EVENT_SIZE; i++) {
         active_widgets_ind[i] = -1;
         last_widgets_ind[i] = -1;
@@ -191,6 +237,7 @@ static int led_widgets_init() {
 
 ZMK_LISTENER(led_widgets_event, led_widgets_event_listener);
 ZMK_SUBSCRIPTION(led_widgets_event, zmk_battery_state_changed);
+#if !IS_ENABLED(CONFIG_ZMK_SPLIT) || IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
 #if defined(CONFIG_USB)
 ZMK_SUBSCRIPTION(led_widgets_event, zmk_usb_conn_state_changed);
 #endif
@@ -199,5 +246,6 @@ ZMK_SUBSCRIPTION(led_widgets_event, zmk_ble_active_profile_changed);
 #endif
 ZMK_SUBSCRIPTION(led_widgets_event, zmk_layer_state_changed);
 ZMK_SUBSCRIPTION(led_widgets_event, zmk_endpoint_changed);
+#endif
 
-SYS_INIT(led_widgets_init, APPLICATION, CONFIG_ZMK_KSCAN_INIT_PRIORITY);
+SYS_INIT(led_widgets_init, APPLICATION, CONFIG_ZMK_LED_WIDGETS_INIT_PRIORITY);

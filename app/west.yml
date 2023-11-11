@@ -21,6 +21,10 @@ manifest:
           - hal_silabs
           - hal_xtensa
           - hal_st
+          - hal_stm32
+          - hal_espressif
+          - hal_telink
+          - hal_atmel
           - hal_ti
           - loramac-node
           - mcuboot
