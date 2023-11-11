@@ -1,0 +1,30 @@
+#include "fissure.dtsi"
+#include "dt-bindings/zmk/is31fl3729_transform.h"
+#include "fissure_left-pinctrl.dtsi"
+
+/ {
+    chosen {
+    };
+};
+
+#define RGB_CS0 3, 2, 1
+#define RGB_CS1 6, 5, 4
+#define RGB_CS2 9, 8, 7
+#define RGB_CS3 15, 14, 13
+#define RGB_CS4 12, 11, 10
+&rgb {
+    map = <
+PIX(0, 0) PIX(0, 1) PIX(0, 3) PIX(1, 3) PIX(2, 3) PIX(3, 3)
+PIX(1, 0) PIX(2, 0) PIX(0, 2) PIX(0, 4) PIX(2, 2) PIX(3, 2)
+          PIX(3, 0) PIX(1, 1) PIX(1, 2) PIX(2, 1) PIX(3, 1)
+                              PIX(1, 4) PIX(2, 4) PIX(3, 4)
+        >;
+};
+
+&rgb {
+    sdb-gpios = <&gpio0 26 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
+};
+
+&spi1 {
+    cs-gpios = <&gpio0 22 GPIO_ACTIVE_LOW>;
+};

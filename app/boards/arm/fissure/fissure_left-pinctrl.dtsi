@@ -1,0 +1,28 @@
+#define I2C_PINS <NRF_PSEL(TWIM_SDA, 0, 8)>, <NRF_PSEL(TWIM_SCL, 0, 6)>
+#define SPI_PINS <NRF_PSEL(SPIM_SCK, 0, 20)>, <NRF_PSEL(SPIM_MOSI, 0, 17)>, <NRF_PSEL(SPIM_MISO, 1, 0)>
+
+&pinctrl {
+    i2c0_def: i2c0_default {
+        group1 {
+            psels = I2C_PINS;
+        };
+    };
+    i2c0_slp: i2c0_sleep {
+        group1 {
+            psels = I2C_PINS;
+            low-power-enable;
+        };
+    };
+
+    spi1_def: spi1_default {
+        group1 {
+            psels = SPI_PINS;
+        };
+    };
+    spi1_slp: spi1_sleep {
+        group1 {
+            psels = SPI_PINS;
+            low-power-enable;
+        };
+    };
+};

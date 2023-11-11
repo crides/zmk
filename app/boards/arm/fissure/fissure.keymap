@@ -1,0 +1,157 @@
+/*
+ * Copyright (c) 2020 The ZMK Contributors
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/modifiers.h>
+#include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/outputs.h>
+#include <dt-bindings/zmk/mouse.h>
+#include "../steno/impl/zmk/steno_keys.h"
+
+&mwh { status = "okay"; };
+
+/ {
+    behaviors {
+        // My Modtap
+        mm: behavior_mod_tap {
+            compatible = "zmk,behavior-hold-tap";
+            label = "MOD_TAP";
+            #binding-cells = <2>;
+            flavor = "balanced";
+            tapping-term-ms = <150>;
+            bindings = <&kp>, <&kp>;
+        };
+        // My Layertap
+        ml: behavior_layer_tap {
+            compatible = "zmk,behavior-hold-tap";
+            label = "LAYER_TAP";
+            #binding-cells = <2>;
+            flavor = "hold-preferred";
+            tapping-term-ms = <150>;
+            bindings = <&mo>, <&kp>;
+        };
+        qm: behavior_layer_tap {
+            compatible = "zmk,behavior-hold-tap";
+            label = "quick mod";
+            #binding-cells = <2>;
+            flavor = "hold-preferred";
+            tapping-term-ms = <150>;
+            quick-tap-ms = <250>;
+            bindings = <&kp>, <&kp>;
+        };
+        ql: behavior_layer_tap {
+            compatible = "zmk,behavior-hold-tap";
+            label = "quick layer";
+            #binding-cells = <2>;
+            flavor = "hold-preferred";
+            tapping-term-ms = <150>;
+            quick-tap-ms = <250>;
+            bindings = <&mo>, <&kp>;
+        };
+    };
+    combos {
+        compatible = "zmk,combos";
+#define CONCAT2(x, y) x ## y
+#define CONCAT(x, y) CONCAT2(x, y)
+#define COMBO(pos, k) CONCAT(combo, __COUNTER__) { key-positions = <pos>; bindings = <&kp k>; layers = <0 1 2 3 4>; timeout-ms = <60>; };
+        COMBO(1 2, PERCENT)
+        COMBO(2 3, BSLH)
+        COMBO(3 4, LBKT)
+        COMBO(7 8, RBKT)
+        COMBO(8 9, EQUAL)
+        COMBO(9 10, PLUS)
+
+        COMBO(13 14, CARET)
+        COMBO(14 15, DOLLAR)
+        COMBO(15 16, LPAR)
+        COMBO(19 20, RPAR)
+        COMBO(20 21, SEMI)
+        COMBO(21 22, COLON)
+
+        COMBO(24 25, EXCL)
+        COMBO(25 26, AT)
+        COMBO(26 27, LBRC)
+        COMBO(30 31, RBRC)
+        COMBO(31 32, FSLH)
+        COMBO(32 33, QMARK)
+
+        COMBO(2 14, GRAVE)
+        COMBO(3 15, AMPS)
+        COMBO(4 16, STAR)
+        COMBO(7 19, UNDER)
+        COMBO(8 20, DQT)
+        COMBO(9 21, SQT)
+
+        COMBO(14 25, TILDE)
+        COMBO(15 26, PIPE)
+        COMBO(16 27, HASH)
+        COMBO(19 30, MINUS)
+        COMBO(20 31, LT)
+        COMBO(21 32, GT)
+    };
+#define BASE 0
+#define LOWER 1
+#define RAISE 2
+#define ADJUST 3
+#define STENO 4
+
+    conditional_layers {
+        compatible = "zmk,conditional-layers";
+        tri_layer {
+            if-layers = <LOWER RAISE>;
+            then-layer = <ADJUST>;
+        };
+    };
+
+    keymap0: keymap {
+        compatible = "zmk,keymap";
+        base {
+            bindings = <
+&none     &kp Q        &kp W       &kp E        &kp R         &kp T         &kp Y         &kp U         &kp I        &kp O         &kp P       &none
+&none     &kp A        &kp S       &kp D        &kp F         &kp G         &kp H         &kp N         &kp K        &kp L         &kp B       &none
+          &kp Z        &kp X       &kp C        &kp V         &none         &none         &kp M         &kp COMMA    &kp DOT       &kp J
+                                   &mm LGUI DEL &mm LCTRL TAB &ml RAISE ESC &ml LOWER RET &mm LSHFT SPC &mm LALT BSPC
+            >;
+        };
+
+        lower {
+            bindings = <
+&none     &kp LG(N1)   &kp LG(N2)  &kp LG(N3)   &kp LG(N4)    &kp LG(N5)    &kp LG(N6)    &kp LG(N7)    &kp LG(N8)   &kp F11       &kp F12     &none
+&none     &kp N1       &kp N2      &kp N3       &kp N4        &kp N5        &kp N6        &kp N7        &kp N8       &kp N9        &kp N0      &none
+          &kp F1       &kp F2      &kp F3       &kp F4        &kp F5        &kp F6        &kp F7        &kp F8       &kp F9        &kp F10
+                                   &trans       &trans        &trans        &trans        &trans        &trans
+            >;
+        };
+
+        raise {
+            bindings = <
+&none &none &kp K_BACK  &mwh SCROLL_VERT(20) &kp K_FORWARD  &none  &kp HOME      &kp PG_DN     &kp PG_UP    &kp END       &kp PRSC    &none
+&none &none &mkp RCLK  &mkp MCLK &mkp LCLK  &none &kp LEFT      &kp DOWN      &kp UP       &kp RIGHT     &none       &none
+          &none &none  &mwh SCROLL_VERT(-20)     &none    &none    &kp LC(LEFT)  &kp LC(DOWN)  &kp LC(UP)   &kp LC(RIGHT) &none
+                                   &trans       &trans        &trans        &trans        &trans        &trans
+            >;
+        };
+
+        adjust {
+            bindings = <
+&none &kp C_BRI_DN &kp C_MUTE  &kp C_VOL_DN &kp C_VOL_UP  &kp C_BRI_UP  &none &none &none &none &none &none
+&none &out OUT_BLE &tog STENO  &none &none  &none  &none &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &none
+          &out OUT_USB &kp C_PREV  &kp C_PP     &kp C_NEXT    &bt BT_CLR    &none &none &none &none &none
+                                   &trans       &trans        &trans        &trans        &trans        &trans
+            >;
+        };
+
+        steno {
+            bindings = <
+&none     &stn STN_S_  &stn STN_T_ &stn STN_P_  &stn STN_H_   &stn STN_STAR &stn STN_STAR &stn STN__F   &stn STN__P  &stn STN__L   &stn STN__T &stn STN__D
+&none     &stn STN_S_  &stn STN_K_ &stn STN_W_  &stn STN_R_   &stn STN_STAR &stn STN_STAR &stn STN__R   &stn STN__B  &stn STN__G   &stn STN__S &stn STN__Z
+          &none        &none       &none        &none         &none         &none         &none         &none        &none         &none
+                                   &tog STENO   &stn STN_A    &stn STN_O    &stn STN_E    &stn STN_U    &stn STN_NUM
+            >;
+        };
+    };
+};
