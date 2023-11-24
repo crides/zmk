@@ -7,5 +7,6 @@ rsource "battery/Kconfig"
 rsource "ec11/Kconfig"
 rsource "max17048/Kconfig"
 rsource "pixart/pmw3610/Kconfig"
+rsource "cirque_trackpad/Kconfig"
 
 endif # SENSOR
