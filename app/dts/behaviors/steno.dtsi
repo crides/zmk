@@ -1,0 +1,15 @@
+/*
+ * Copyright (c) 2020 The ZMK Contributors
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+/ {
+	behaviors {
+		stn: behavior_steno {
+			compatible = "zmk,behavior-steno";
+			label = "STENO";
+			#binding-cells = <1>;
+		};
+	};
+};

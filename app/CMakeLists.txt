@@ -103,6 +103,10 @@ target_sources_ifdef(CONFIG_ZMK_LOW_PRIORITY_WORK_QUEUE app PRIVATE src/workqueu
 target_sources(app PRIVATE src/main.c)
 target_sources_ifdef(CONFIG_ZMK_LED_WIDGETS app PRIVATE src/led_widgets.c)
 
+if (CONFIG_ZMK_EMBEDDED_STENO)
+    add_subdirectory(steno)
+endif()
+
 add_subdirectory(src/display/)
 add_subdirectory_ifdef(CONFIG_SETTINGS src/settings/)
 add_subdirectory(src/mouse/)
