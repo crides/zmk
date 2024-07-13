@@ -1,0 +1,23 @@
+# Copyright (c) 2022 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+if LED_STRIP
+
+DT_COMPAT_ISSI_IS31FL3729 := issi,is31fl3729
+
+menuconfig IS31FL3729
+    bool "IS31FL3729 16x8 / 15x9 LED matrix driver"
+    default $(dt_compat_enabled,$(DT_COMPAT_ISSI_IS31FL3729))
+    depends on I2C
+
+if IS31FL3729
+
+config IS31FL3729_INIT_PRIORITY
+    int "Init priority"
+    default 80
+    help
+      Device driver initialization priority.
+
+endif # IS31FL3729
+
+endif # LED_STRIP
