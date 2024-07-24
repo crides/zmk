@@ -1,8 +1,5 @@
 if BOARD_FISSURE_LEFT || BOARD_FISSURE_RIGHT
 
-config BOARD
-	default "fissure"
-
 config ZMK_KEYBOARD_NAME
 	default "Fissure v3.3"
 
@@ -26,38 +23,30 @@ config ZMK_BLE
 	default y
 
 config ZMK_USB
-	default y
+	default y if BOARD_FISSURE_RIGHT
 
 config ZMK_BATTERY_VOLTAGE_DIVIDER
 	default y
 
-if ZMK_DISPLAY
-
-config I2C
-	default y
-
-config SSD1306
-	default y
-
-# config SSD1306_REVERSE_MODE
-# 	default y
-
-endif # ZMK_DISPLAY
-
-if LVGL
-
-config LV_Z_VDB_SIZE
-	default 50
-
-config LV_Z_BITS_PER_PIXEL
-	default 1
-
-choice LV_COLOR_DEPTH
-	default LV_COLOR_DEPTH_1
-endchoice
-
+if ZMK_MOUSE
+config INPUT
+    default y
 endif
 
-source "/home/steven/gitproj/zmk/app/steno/Kconfig"
+config RTT_LOG
+    bool "RTT logging"
+    select LOG
+    select CONSOLE
+    select USE_SEGGER_RTT
+    select RTT_CONSOLE
+
+if RTT_LOG
+config LOG_BACKEND_RTT_OUTPUT_BUFFER_SIZE
+    default 128
+config LOG_BUFFER_SIZE
+    default 8192
+endif
+
+rsource "../../../steno/Kconfig"
 
 endif

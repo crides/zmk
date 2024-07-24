@@ -12,14 +12,11 @@
 #include <dt-bindings/zmk/mouse.h>
 #include "../steno/impl/zmk/steno_keys.h"
 
-&mwh { status = "okay"; };
-
 / {
     behaviors {
         // My Modtap
         mm: behavior_mod_tap {
             compatible = "zmk,behavior-hold-tap";
-            label = "MOD_TAP";
             #binding-cells = <2>;
             flavor = "balanced";
             tapping-term-ms = <150>;
@@ -28,24 +25,21 @@
         // My Layertap
         ml: behavior_layer_tap {
             compatible = "zmk,behavior-hold-tap";
-            label = "LAYER_TAP";
             #binding-cells = <2>;
             flavor = "hold-preferred";
             tapping-term-ms = <150>;
             bindings = <&mo>, <&kp>;
         };
-        qm: behavior_layer_tap {
+        qm: behavior_quick_mod {
             compatible = "zmk,behavior-hold-tap";
-            label = "quick mod";
             #binding-cells = <2>;
             flavor = "hold-preferred";
             tapping-term-ms = <150>;
             quick-tap-ms = <250>;
             bindings = <&kp>, <&kp>;
         };
-        ql: behavior_layer_tap {
+        ql: behavior_quick_layer {
             compatible = "zmk,behavior-hold-tap";
-            label = "quick layer";
             #binding-cells = <2>;
             flavor = "hold-preferred";
             tapping-term-ms = <150>;
@@ -129,9 +123,9 @@
 
         raise {
             bindings = <
-&none &none &kp K_BACK  &mwh SCROLL_VERT(20) &kp K_FORWARD  &none  &kp HOME      &kp PG_DN     &kp PG_UP    &kp END       &kp PRSC    &none
+&none &none &kp K_BACK  &msc MOVE_Y(20) &kp K_FORWARD  &none  &kp HOME      &kp PG_DN     &kp PG_UP    &kp END       &kp PRSC    &none
 &none &none &mkp RCLK  &mkp MCLK &mkp LCLK  &none &kp LEFT      &kp DOWN      &kp UP       &kp RIGHT     &none       &none
-          &none &none  &mwh SCROLL_VERT(-20)     &none    &none    &kp LC(LEFT)  &kp LC(DOWN)  &kp LC(UP)   &kp LC(RIGHT) &none
+          &none &none  &msc MOVE_Y(-20)     &none    &none    &kp LC(LEFT)  &kp LC(DOWN)  &kp LC(UP)   &kp LC(RIGHT) &none
                                    &trans       &trans        &trans        &trans        &trans        &trans
             >;
         };
@@ -139,7 +133,7 @@
         adjust {
             bindings = <
 &none &kp C_BRI_DN &kp C_MUTE  &kp C_VOL_DN &kp C_VOL_UP  &kp C_BRI_UP  &none &none &none &none &none &none
-&none &out OUT_BLE &tog STENO  &none &none  &none  &none &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &none
+&none &out OUT_BLE &tog STENO  &none &none  &none  &bt BT_SEL 4 &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 5
           &out OUT_USB &kp C_PREV  &kp C_PP     &kp C_NEXT    &bt BT_CLR    &none &none &none &none &none
                                    &trans       &trans        &trans        &trans        &trans        &trans
             >;

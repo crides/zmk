@@ -114,15 +114,21 @@ static void swap_xy(struct input_event *evt) {
     case INPUT_REL_Y:
         evt->code = INPUT_REL_X;
         break;
+    case INPUT_REL_WHEEL:
+        evt->code = INPUT_REL_HWHEEL;
+        break;
+    case INPUT_REL_HWHEEL:
+        evt->code = INPUT_REL_WHEEL;
+        break;
     }
 }
 
 static inline bool is_x_data(const struct input_event *evt) {
-    return evt->type == INPUT_EV_REL && evt->code == INPUT_REL_X;
+    return evt->type == INPUT_EV_REL && (evt->code == INPUT_REL_X || evt->code == INPUT_REL_HWHEEL);
 }
 
 static inline bool is_y_data(const struct input_event *evt) {
-    return evt->type == INPUT_EV_REL && evt->code == INPUT_REL_Y;
+    return evt->type == INPUT_EV_REL && (evt->code == INPUT_REL_Y || evt->code == INPUT_REL_WHEEL);
 }
 
 static void filter_with_input_config(const struct input_listener_config *cfg,
