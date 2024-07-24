@@ -43,12 +43,21 @@ PIX(3, 4) PIX(2, 4) PIX(1, 4)
 
     trackpad@2 {
         compatible = "cirque,pinnacle";
-        status = "okay";
+        status = "disabled";
         reg = <2>;
         spi-max-frequency = <10000000>;
         dr-gpios = <&gpio0 13 GPIO_ACTIVE_HIGH>;
         rotate-90;
         sleep;
         /* no-taps; */
+    };
+};
+
+/ {
+    mouse_input_listener {
+        compatible = "zmk,input-listener";
+        device = <&trackball>;
+        xy-swap;
+        x-invert;
     };
 };
