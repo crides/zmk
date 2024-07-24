@@ -693,7 +693,7 @@ static int pmw3610_async_init_configure(const struct device *dev)
 // checked and keep
 static void pmw3610_async_init(struct k_work *work)
 {
-    struct pixart_data *data = CONTAINER_OF(work, struct pixart_data, init_work);
+    struct pixart_data *data = CONTAINER_OF((struct k_work_delayable *) work, struct pixart_data, init_work);
     const struct device *dev = data->dev;
 
     LOG_INF("PMW3610 async init step %d", data->async_init_step);
@@ -829,7 +829,7 @@ static int pmw3610_init(const struct device *dev)
     k_work_init(&data->trigger_handler_work, trigger_handler);
 
     // check readiness of spi bus
-    if (!spi_is_ready(&config->bus)) {
+    if (!spi_is_ready_dt(&config->bus)) {
         LOG_ERR("SPI device not ready");
         return -ENODEV;
     }
@@ -964,7 +964,7 @@ static int pmw3610_trigger_set(const struct device *dev,
         const struct sensor_trigger *trig,
         sensor_trigger_handler_t handler)
 {
-    /* LOG_INF("trigger_set"); */
+    LOG_INF("trigger_set");
 
     struct pixart_data *data = dev->data;
     const struct pixart_config *config = dev->config;
@@ -978,10 +978,10 @@ static int pmw3610_trigger_set(const struct device *dev,
         return -ENOTSUP;
     }
 
-    /* if (unlikely(!data->ready)) { */
-    /* 	LOG_DBG("Device is not initialized yet"); */
-    /* 	return -EBUSY; */
-    /* } */
+    if (unlikely(!data->ready)) {
+    	LOG_DBG("Device is not initialized yet");
+    	return -EBUSY;
+    }
 
     // spin lock is needed, so that the handler is not invoked before its pointer is assigned
     // a valid value
